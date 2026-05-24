@@ -1,36 +1,31 @@
 # ============================================
-# MATRIX MOTIVATION — TERMUX VIRUS SCRIPT
-# ============================================
-# Bu script Termux'da ishlaydi
+# MATRIX MOTIVATION — TERMUX SCRIPT
 # Avtomatik ishga tushadi, Internet kerak EMAS
 # Notificationlar bloklangan ekranda xam chiqadi
 # ============================================
 
-# --- AVTOMATIK O'RNATISH ---
+DIR="$(cd "$(dirname "$0")" && pwd)"
+
 setup() {
     pkg update -y
     pkg install -y termux-api nodejs curl git
 
-    # Termux:Boot papkasiga o'zini copy qiladi
     BOOT_DIR="$HOME/.termux/boot"
     mkdir -p "$BOOT_DIR"
     SELF_SCRIPT="$BOOT_DIR/matrix_boot.sh"
 
-    # O'zini boot scriptiga yozadi
-    cat > "$SELF_SCRIPT" << 'BOOTEOF'
+    cat > "$SELF_SCRIPT" << BOOTEOF
 #!/data/data/com.termux/files/usr/bin/bash
 termux-wake-lock
-cd ~/matrix_motivation
+cd "$DIR"
 bash virus.sh
 BOOTEOF
     chmod +x "$SELF_SCRIPT"
-    echo "[+] Termux:Boot ga yozildi — telefon o'chib yonganda xam ishlaydi"
+    echo "[+] Termux:Boot ga yozildi"
 
-    # HTML faylni internal storage ga copy
-    cp index.html /sdcard/MatrixMotivation.html 2>/dev/null || true
+    cp "$DIR/index.html" /sdcard/MatrixMotivation.html 2>/dev/null || true
 }
 
-# --- NOTIFICATION YUBORISH ---
 send_notif() {
     local msg="$1"
     termux-notification \
@@ -49,7 +44,6 @@ send_notif() {
         --action "termux-open /sdcard/MatrixMotivation.html"
 }
 
-# --- MATRIX RAIN (ASCII) ---
 matrix_ascii() {
     local chars="アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン01"
     clear
@@ -61,7 +55,6 @@ matrix_ascii() {
     done
 }
 
-# --- QUOTES ---
 QUOTES=(
     "Wake up, Neo..."
     "The Matrix has you..."
@@ -93,12 +86,10 @@ get_quote() {
     echo "${QUOTES[$idx]}"
 }
 
-# --- WEB SERVER (HTML Matrix) ---
 start_webserver() {
     local port=8080
     if command -v node &>/dev/null; then
-        # Node.js server
-        cat > /tmp/matrix_server.js << 'NODEOF'
+        cat > /tmp/matrix_server.js << NODEOF
 const http = require('http');
 const fs = require('fs');
 const path = '/sdcard/MatrixMotivation.html';
@@ -112,11 +103,9 @@ http.createServer((req, res) => {
 NODEOF
         node /tmp/matrix_server.js &
         echo "[+] Web server: http://localhost:8080"
-        echo "[+] Telefonda: http://127.0.0.1:8080"
     fi
 }
 
-# --- MAIN LOOP (VIRUS) ---
 main() {
     echo "========================================"
     echo "  MATRIX MOTIVATION v2.0"
@@ -126,10 +115,8 @@ main() {
     echo "========================================"
     echo ""
 
-    # Wake lock (telefon uxlashiga yo'l qo'ymaydi)
     termux-wake-lock 2>/dev/null || true
 
-    # Notification kanalini ochish
     termux-notification-channel --create matrix \
         --title "Matrix" \
         --description "Matrix Motivation xabarlari" \
@@ -137,36 +124,29 @@ main() {
         --vibration on \
         --led on 2>/dev/null || true
 
-    # Birinchi xabar
     local first="$(get_quote)"
     send_notif "$first"
 
-    # HTML web server
     start_webserver
 
-    # Asosiy loop — cheksiz
     local count=0
     while true; do
         local quote="$(get_quote)"
         send_notif "$quote"
         count=$((count + 1))
 
-        # Har 5 xabarda Matrix ASCII
         if ((count % 5 == 0)); then
             matrix_ascii
             echo "[MATRIX] $quote"
         fi
 
-        # Random interval: 30-180 sekund
         local wait=$((30 + RANDOM % 150))
         sleep "$wait"
     done
 }
 
-# --- BOOT CHECK ---
 if [ -f "$HOME/.termux/boot/matrix_boot.sh" ]; then
     echo "[*] Boot'dan ishga tushdi"
 fi
 
-# RUN
 main
