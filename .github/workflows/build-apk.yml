@@ -34,42 +34,10 @@ jobs:
           flutter pub get
 
       - name: Apply lock screen permissions
-        run: |
-          MANIFEST="android/app/src/main/AndroidManifest.xml"
-          python3 << 'PYEOF'
-import re
-with open("android/app/src/main/AndroidManifest.xml", "r") as f:
-    content = f.read()
-
-perms = '''    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
-'''
-
-content = content.replace("    <application", perms + "    <application")
-content = content.replace(
-    'android:hardwareAccelerated="true">',
-    'android:hardwareAccelerated="true" android:showWhenLocked="true" android:showOnLockScreen="true" android:turnScreenOn="true">'
-)
-
-with open("android/app/src/main/AndroidManifest.xml", "w") as f:
-    f.write(content)
-print("Manifest updated")
-PYEOF
+        run: python3 .github/scripts/fix_manifest.py
 
       - name: Build APK
         run: flutter build apk --release
-
-      - name: Sign APK
-        run: |
-          APK="build/app/outputs/flutter-apk/app-release.apk"
-          if [ -f "$APK" ]; then
-            mv "$APK" "MatrixMotivation-v1.0.apk"
-          fi
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -78,12 +46,12 @@ PYEOF
           name: Matrix Motivation v1.0.${{ github.run_number }}
           body: |
             ## MATRIX MOTIVATION APK
-            
+
             - Avtomatik build
             - Bloklangan ekranda notification
             - Matrix rain effekt
             - 48 ta o'zbekcha motivatsion xabarlar
-            
+
             Yuklab olish uchun pastdagi .apk faylni bosing.
-          files: MatrixMotivation-v1.0.apk
+          files: build/app/outputs/flutter-apk/app-release.apk
           generate_release_notes: false
