@@ -1,41 +1,25 @@
-# Matrix Motivation
+# XOLERIK
 
-Matrix uslubidagi motivatsion notificationlar ilovasi.
+Sen dunyoni o'zgartirishing kerak!
 
 ## Xususiyatlar
 
-- Matrix filmidagi kabi yashil harflar (Matrix Rain)
-- Motivatsion va Matrix uslubidagi xabarlar
+- Matrix uslubidagi yashil harflar (Matrix Rain)
+- Motivatsion o'zbekcha xabarlar
 - Bloklangan ekranda notificationlar
-- Android va PC (Windows/Linux/Mac) uchun
-- Background notification scheduling
+- Internet kerak emas
+- Android APK + Termux + HTML
 
-## Ishga tushirish
+## Yuklab olish
 
-```bash
-flutter pub get
-flutter run
-```
+**APK:** https://github.com/xolerc/matrix-motivation/releases/latest/download/Xolerik.apk
+**Sayt:** https://xolerc.github.io/matrix-motivation/
 
-## Android qurilmada
+## Termux o'rnatish
 
 ```bash
-flutter run --release
-```
-
-## PC da
-
-```bash
-flutter config --enable-linux-desktop
-flutter run -d linux
-# yoki
-flutter run -d windows
-# yoki
-flutter run -d macos
-```
-
-## Build APK
-
-```bash
-flutter build apk --release
+pkg install git -y
+git clone https://github.com/xolerc/matrix-motivation
+cd matrix-motivation
+bash install.sh
 ```

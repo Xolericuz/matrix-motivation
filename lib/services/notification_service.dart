@@ -2,11 +2,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:workmanager/workmanager.dart';
 import 'quote_service.dart';
 
-const String notificationChannelId = 'matrix_motivation_channel';
-const String notificationChannelName = 'Matrix Motivatsiya';
-const String notificationChannelDesc = 'Motivatsion va Matrix uslubidagi xabarlar';
-const String workmanagerTaskName = 'matrix_motivation_task';
-const String notificationPayload = 'matrix_motivation';
+const String notificationChannelId = 'xolerik_channel';
+const String notificationChannelName = 'XOLERIK';
+const String notificationChannelDesc = 'Xolerik — uyg\'on va dunyoni o\'zgartir!';
+const String workmanagerTaskName = 'xolerik_task';
+const String notificationPayload = 'xolerik';
 
 @pragma('vm:entry-point')
 void callbackDispatcher() {
@@ -105,7 +105,7 @@ class NotificationService {
     final id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     await _notifications.show(
       id,
-      'MATRIX',
+      'XOLERIK',
       message,
       details,
       payload: notificationPayload,
@@ -120,7 +120,7 @@ class NotificationService {
 
   Future<void> schedulePeriodicNotifications() async {
     await Workmanager().registerPeriodicTask(
-      'matrix_motivation',
+      'xolerik',
       workmanagerTaskName,
       frequency: const Duration(hours: 1),
       constraints: Constraints(

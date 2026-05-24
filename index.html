@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Matrix Motivation&quot;,&quot;short_name&quot;:&quot;Matrix&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;fullscreen&quot;,&quot;background_color&quot;:&quot;#000000&quot;,&quot;theme_color&quot;:&quot;#000000&quot;,&quot;orientation&quot;:&quot;portrait&quot;}">
-<title>MATRIX MOTIVATION</title>
+<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Xolerik&quot;,&quot;short_name&quot;:&quot;Xolerik&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;fullscreen&quot;,&quot;background_color&quot;:&quot;#000000&quot;,&quot;theme_color&quot;:&quot;#000000&quot;,&quot;orientation&quot;:&quot;portrait&quot;}">
+<title>XOLERIK</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:monospace;color:#0f0;user-select:none;-webkit-user-select:none}
@@ -56,9 +56,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:mon
 </div>
 
 <div id="ui-overlay">
-  <div class="logo">MATRIX<br>MOTIVATION</div>
+  <div class="logo">XOLERIK</div>
   <div class="quote-display" id="quoteDisplay">
-    <div class="quote-text" id="quoteText">Wake up, Neo...</div>
+    <div class="quote-text" id="quoteText">Uyg'on, Xoleric...</div>
     <div class="quote-time" id="quoteTime">--:--</div>
   </div>
   <div class="btn-group">
@@ -70,7 +70,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:mon
     <button class="btn btn-danger" onclick="resetApp()">RESET</button>
   </div>
   <div class="btn-group" style="margin-top:10px">
-    <a href="https://github.com/xolerc/matrix-motivation/releases/latest/download/app-release.apk" class="btn btn-install" style="text-decoration:none;text-align:center;font-size:clamp(13px,2vw,16px)">⬇ APK YUKLAB OLISH</a>
+    <a href="https://github.com/xolerc/matrix-motivation/releases/latest/download/Xolerik.apk" class="btn btn-install" style="text-decoration:none;text-align:center;font-size:clamp(13px,2vw,16px)">⬇ XOLERIK APK</a>
   </div>
   <div class="btn-group" style="margin-top:10px">
     <a href="termux-install.html" class="btn btn-secondary" style="text-decoration:none;text-align:center">TERMUX O'RNATISH</a>
@@ -85,7 +85,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:mon
 <div class="status-bar" id="statusBar">
   <div class="status-item"><span class="status-dot green" id="platformDot"></span><span id="platformLabel">ANDROID</span></div>
   <div class="status-item"><span class="status-dot green" id="notifDot"></span><span id="notifLabel">NOTIF: ON</span></div>
-  <div class="status-item"><span id="msgCount">0</span> messages</div>
+  <div class="status-item"><span id="msgCount">0</span> xabar</div>
 </div>
 
 <script>
@@ -222,7 +222,7 @@ function sendNotification() {
   showQuote(quote);
   if ('Notification' in window && Notification.permission === 'granted') {
     try {
-      const n = new Notification('MATRIX', {
+      const n = new Notification('XOLERIK', {
         body: quote,
         tag: 'matrix-' + Date.now(),
         requireInteraction: true,
@@ -321,7 +321,7 @@ async function registerSW() {
       self.addEventListener('activate', e => e.waitUntil(clients.claim()));
       self.addEventListener('message', e => {
         if (e.data && e.data.type === 'show') {
-          self.registration.showNotification('MATRIX', {
+          self.registration.showNotification('XOLERIK', {
             body: e.data.quote,
             tag: 'matrix-' + Date.now(),
             requireInteraction: true,
@@ -427,7 +427,7 @@ function init() {
   // Resize handler
   window.addEventListener('resize', resize);
 
-  console.log('>> Matrix Motivation loaded');
+  console.log('>> Xolerik loaded');
   console.log('>> Platform:', document.getElementById('platformLabel').textContent);
   console.log('>> SPACE/ENTER/DoubleTap = new message');
   console.log('>> F = fullscreen, N = toggle notifications');

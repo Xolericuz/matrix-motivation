@@ -7,7 +7,7 @@ class MatrixMotivationApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Matrix Motivation',
+      title: 'XOLERIK',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,

@@ -14,6 +14,7 @@ perms = (
 )
 
 c = c.replace('    <application', perms + '    <application')
+c = c.replace('android:label="xolerik"', 'android:label="Xolerik"')
 c = c.replace(
     'android:hardwareAccelerated="true">',
     'android:hardwareAccelerated="true" android:showWhenLocked="true" android:showOnLockScreen="true" android:turnScreenOn="true">'

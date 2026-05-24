@@ -5,7 +5,7 @@ G="\033[32m"; R="\033[31m"; Y="\033[33m"; N="\033[0m"
 clear
 echo -e "${G}"
 echo "  ╔══════════════════════════════════════╗"
-echo "  ║      MATRIX MOTIVATION v2.0          ║"
+echo "  ║      XOLERIK v2.0                     ║"
 echo "  ║     TERMUX GA O'RNATISH SKRIPTI      ║"
 echo "  ╚══════════════════════════════════════╝"
 echo -e "${N}"
@@ -61,7 +61,7 @@ fi
 echo ""
 echo -e "${G}[2/5]${N} Ruxsatlar so'ralmoqda..."
 
-termux-notification --id setup_matrix --title "MATRIX MOTIVATION" \
+termux-notification --id setup_xolerik --title "XOLERIK" \
     --content "O'rnatish boshlandi. Notification ruxsatini bering." \
     --priority high --alert-once 2>/dev/null
 sleep 1
@@ -99,7 +99,7 @@ send_notif() {
     local msg="$1"
     termux-notification \
         --id "matrix_$$" \
-        --title "MATRIX" \
+        --title "XOLERIK" \
         --content "$msg" \
         --priority high \
         --alert-once \
@@ -167,7 +167,7 @@ start_webserver() {
 const http=require('http'),fs=require('fs');
 const p=['/sdcard/MatrixMotivation.html','/storage/emulated/0/MatrixMotivation.html'];
 http.createServer((q,r)=>{
-    let d='<html style="background:#000;color:#0f0;height:100%;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:2em">MATRIX</html>';
+    let d='<html style="background:#000;color:#0f0;height:100%;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:2em">XOLERIK</html>';
     for(const f of p){try{d=fs.readFileSync(f,'utf8');break}catch(e){}}
     r.writeHead(200,{'Content-Type':'text/html'});r.end(d);
 }).listen(8080);
@@ -180,7 +180,7 @@ NEOF
 main() {
     echo ""
     echo "========================================"
-    echo "  MATRIX MOTIVATION"
+    echo "  XOLERIK"
     echo "  PID: $$"
     echo "  Status: RUNNING"
     echo "========================================"
@@ -192,7 +192,7 @@ main() {
 
     termux-notification-channel --create matrix \
         --title "Matrix" \
-        --description "Matrix Motivation" \
+        --description "Xolerik" \
         --sound ringtone \
         --vibration on 2>/dev/null || true
 
@@ -209,7 +209,7 @@ main() {
 
         if ((count % 5 == 0)); then
             matrix_ascii
-            echo -e "\033[32m[MATRIX]\033[0m $quote"
+            echo -e "\033[32m[XOLERIK]\033[0m $quote"
         fi
 
         sleep $((30 + RANDOM % 150))

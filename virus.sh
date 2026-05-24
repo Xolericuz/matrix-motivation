@@ -1,5 +1,5 @@
 # ============================================
-# MATRIX MOTIVATION — TERMUX SCRIPT
+# XOLERIK — TERMUX SCRIPT
 # Avtomatik ishga tushadi, Internet kerak EMAS
 # Notificationlar bloklangan ekranda xam chiqadi
 # ============================================
@@ -30,7 +30,7 @@ send_notif() {
     local msg="$1"
     termux-notification \
         --id "matrix_$$" \
-        --title "MATRIX" \
+        --title "XOLERIK" \
         --content "$msg" \
         --priority high \
         --alert-once \
@@ -123,7 +123,7 @@ const path = '/sdcard/MatrixMotivation.html';
 http.createServer((req, res) => {
     fs.readFile(path, (err, data) => {
         res.writeHead(200, {'Content-Type': 'text/html'});
-        res.end(data || '<h1 style="color:lime;background:#000;height:100vh;display:flex;align-items:center;justify-content:center">MATRIX</h1>');
+        res.end(data || '<h1 style="color:lime;background:#000;height:100vh;display:flex;align-items:center;justify-content:center">XOLERIK</h1>');
     });
 }).listen(8080);
 NODEOF
@@ -134,7 +134,7 @@ NODEOF
 
 main() {
     echo "========================================"
-    echo "  MATRIX MOTIVATION v2.0"
+    echo "  XOLERIK v2.0"
     echo "  Platform: $(uname -o)"
     echo "  PID: $$"
     echo "  Status: ACTIVE"
@@ -145,7 +145,7 @@ main() {
 
     termux-notification-channel --create matrix \
         --title "Matrix" \
-        --description "Matrix Motivation xabarlari" \
+        --description "Xolerik xabarlari" \
         --sound ringtone \
         --vibration on \
         --led on 2>/dev/null || true
@@ -163,7 +163,7 @@ main() {
 
         if ((count % 5 == 0)); then
             matrix_ascii
-            echo "[MATRIX] $quote"
+            echo "[XOLERIK] $quote"
         fi
 
         local wait=$((30 + RANDOM % 150))

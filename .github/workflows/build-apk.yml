@@ -30,22 +30,24 @@ jobs:
       - name: Generate Android project
         run: |
           rm -rf android ios
-          flutter create --project-name matrix_motivation --platforms android .
+          flutter create --project-name xolerik --platforms android .
           flutter pub get
 
       - name: Apply lock screen permissions
         run: python3 .github/scripts/fix_manifest.py
 
       - name: Build APK
-        run: flutter build apk --release
+        run: |
+          flutter build apk --release
+          cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/Xolerik.apk
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.${{ github.run_number }}
-          name: Matrix Motivation v1.0.${{ github.run_number }}
+          name: Xolerik v1.0.${{ github.run_number }}
           body: |
-            ## MATRIX MOTIVATION APK
+            ## XOLERIK APK
 
             - Avtomatik build
             - Bloklangan ekranda notification
@@ -53,5 +55,5 @@ jobs:
             - 48 ta o'zbekcha motivatsion xabarlar
 
             Yuklab olish uchun pastdagi .apk faylni bosing.
-          files: build/app/outputs/flutter-apk/app-release.apk
+          files: build/app/outputs/flutter-apk/Xolerik.apk
           generate_release_notes: false
