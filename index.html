@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Matrix Motivation&quot;,&quot;short_name&quot;:&quot;Matrix&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;fullscreen&quot;,&quot;background_color&quot;:&quot;#000000&quot;,&quot;theme_color&quot;:&quot;#000000&quot;,&quot;orientation&quot;:&quot;portrait&quot;}">
+<title>MATRIX MOTIVATION</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:monospace;color:#0f0;user-select:none;-webkit-user-select:none}
+#matrix-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;background:#000}
+#ui-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px}
+#ui-overlay>*{pointer-events:auto}
+.logo{font-size:clamp(24px,7vw,60px);font-weight:bold;text-align:center;line-height:1.2;margin-bottom:30px;text-shadow:0 0 20px #0f0,0 0 40px #0f0,0 0 80px #0f0;animation:glow 3s ease-in-out infinite alternate;word-break:break-word}
+@keyframes glow{0%{text-shadow:0 0 10px #0f0,0 0 20px #0f0}100%{text-shadow:0 0 30px #0f0,0 0 60px #0f0,0 0 90px #0f0}}
+.quote-display{min-height:80px;max-width:700px;text-align:center;padding:20px 30px;margin-bottom:30px;border:1px solid rgba(0,255,0,0.3);background:rgba(0,0,0,0.85);border-radius:4px;box-shadow:0 0 30px rgba(0,255,0,0.1);width:90%;position:relative;overflow:hidden}
+.quote-display::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,255,0,0.05),transparent);animation:scanline 3s linear infinite}
+@keyframes scanline{0%{left:-100%}100%{left:100%}}
+.quote-text{font-size:clamp(14px,3vw,24px);line-height:1.6;margin-bottom:10px;opacity:0;transition:opacity 0.5s;word-break:break-word}
+.quote-text.visible{opacity:1}
+.quote-time{font-size:clamp(10px,1.5vw,13px);opacity:0.5}
+.btn-group{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;width:100%;max-width:500px}
+.btn{padding:clamp(12px,2vw,18px) clamp(20px,3vw,32px);font-family:monospace;font-size:clamp(11px,2vw,16px);font-weight:bold;border:none;border-radius:4px;cursor:pointer;transition:all 0.3s;text-transform:uppercase;letter-spacing:1px;pointer-events:auto;min-width:120px;flex:1}
+.btn-primary{background:#0f0;color:#000;box-shadow:0 0 20px rgba(0,255,0,0.3)}
+.btn-primary:hover{box-shadow:0 0 40px rgba(0,255,0,0.6);transform:scale(1.02)}
+.btn-secondary{background:transparent;color:#0f0;border:2px solid #0f0}
+.btn-secondary:hover{background:rgba(0,255,0,0.1);box-shadow:0 0 20px rgba(0,255,0,0.2)}
+.btn-danger{background:transparent;color:#f44;border:2px solid #f44}
+.btn-danger:hover{background:rgba(255,68,68,0.1)}
+.status-bar{position:fixed;bottom:0;left:0;right:0;z-index:2;padding:clamp(6px,1vw,12px) clamp(10px,2vw,20px);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;font-size:clamp(9px,1.2vw,12px);background:rgba(0,0,0,0.9);border-top:1px solid rgba(0,255,0,0.2);min-height:40px}
+.status-item{display:flex;align-items:center;gap:6px}
+.status-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.status-dot.green{background:#0f0;box-shadow:0 0 6px #0f0;animation:pulse 2s infinite}
+.status-dot.red{background:#f44;box-shadow:0 0 6px #f44}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.message-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:10;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,0.92);flex-direction:column;padding:20px}
+.message-overlay.active{display:flex}
+.message-big{font-size:clamp(20px,5vw,48px);text-align:center;line-height:1.5;text-shadow:0 0 40px #0f0,0 0 80px #0f0;max-width:800px;margin-bottom:30px;word-break:break-word}
+.message-close{background:transparent;color:#0f0;border:1px solid #0f0;padding:12px 40px;font-family:monospace;font-size:16px;cursor:pointer;border-radius:4px;transition:all 0.3s}
+.message-close:hover{background:#0f0;color:#000}
+.notif-perm-banner{position:fixed;top:0;left:0;right:0;z-index:20;background:rgba(0,255,0,0.15);border-bottom:1px solid #0f0;padding:10px 20px;text-align:center;font-size:13px;display:none;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.notif-perm-banner button{background:#0f0;color:#000;border:none;padding:6px 20px;font-family:monospace;font-weight:bold;border-radius:4px;cursor:pointer;margin-left:10px}
+.hidden{display:none}
+@media(max-width:480px){.quote-display{padding:12px 16px;min-height:60px}}
+</style>
+</head>
+<body>
+
+<canvas id="matrix-canvas"></canvas>
+
+<div id="notif-banner" class="notif-perm-banner">
+  Notificationlarni yoqish uchun <button onclick="requestNotif()">RUXSAT BERISH</button>
+</div>
+
+<div id="ui-overlay">
+  <div class="logo">MATRIX<br>MOTIVATION</div>
+  <div class="quote-display" id="quoteDisplay">
+    <div class="quote-text" id="quoteText">Wake up, Neo...</div>
+    <div class="quote-time" id="quoteTime">--:--</div>
+  </div>
+  <div class="btn-group">
+    <button class="btn btn-primary" onclick="showFullMessage()">XABAR</button>
+    <button class="btn btn-secondary" id="notifBtn" onclick="toggleNotif()">NOTIF: ON</button>
+  </div>
+  <div class="btn-group" style="margin-top:10px">
+    <button class="btn btn-secondary" onclick="openFullscreen()">FULLSCREEN</button>
+    <button class="btn btn-danger" onclick="resetApp()">RESET</button>
+  </div>
+</div>
+
+<div class="message-overlay" id="messageOverlay">
+  <div class="message-big" id="messageBig"></div>
+  <button class="message-close" onclick="closeMessage()">[ CLOSE ]</button>
+</div>
+
+<div class="status-bar" id="statusBar">
+  <div class="status-item"><span class="status-dot green" id="platformDot"></span><span id="platformLabel">ANDROID</span></div>
+  <div class="status-item"><span class="status-dot green" id="notifDot"></span><span id="notifLabel">NOTIF: ON</span></div>
+  <div class="status-item"><span id="msgCount">0</span> messages</div>
+</div>
+
+<script>
+// ==================== MATRIX RAIN ENGINE ====================
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+
+let W, H, cols, drops = [], fontSize;
+const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ{}[]<>$%#@&';
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  fontSize = Math.max(10, Math.min(20, W / 60));
+  cols = Math.floor(W / fontSize);
+  while (drops.length < cols) drops.push(Math.random() * -100);
+  while (drops.length > cols) drops.pop();
+}
+
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(0,0,0,0.05)';
+  ctx.fillRect(0, 0, W, H);
+  ctx.font = fontSize + 'px monospace';
+  for (let i = 0; i < cols; i++) {
+    const char = chars[Math.floor(Math.random() * chars.length)];
+    const x = i * fontSize;
+    const y = drops[i] * fontSize;
+    const alpha = Math.min(1, 0.2 + (y / H) * 0.8);
+    ctx.fillStyle = `rgba(0,255,0,${alpha * 0.4})`;
+    ctx.fillText(char, x, y);
+    if (y > H && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  }
+}
+
+// ==================== QUOTES DATABASE ====================
+const quotes = [
+  "Wake up, Neo...","The Matrix has you...","Follow the white rabbit.",
+  "Knock, knock, Neo.","There is no spoon.","I know kung fu.",
+  "Free your mind.","Welcome to the real world.","What is real?",
+  "I can only show you the door. You have to walk through it.",
+  "Choice is an illusion.","The Matrix is everywhere.","Denial is the most predictable of all human responses.",
+  "Never send a human to do a machine's job.","The problem is choice.",
+  "Because I choose to.","Everything that has a beginning has an end.",
+  "Sen dunyoni o'zgartirishing kerak!","Uyg'on! Vaqt keldi!",
+  "Har bir kun yangi imkoniyat.","Bugun o'zgarishni boshlash uchun eng yaxshi kun.",
+  "Sen cheksiz imkoniyatlarga egasan.","Orzularing sari bir qadam tashla.",
+  "Muvaffaqiyat - bu odat.","Kuch sening ichingda.",
+  "Tush kutmaydi, sen uni quvishing kerak.","Hech qachon kech emas.",
+  "Imkoniyatlar cheksiz.","Bugun sen eng yaxshi versiyang bo'l.",
+  "Har bir qiyinchilik yangi imkoniyatdir.","Sen o'ylagandan ham kuchlisan.",
+  "Intizom - bu erkinlik.","Harakat qil, xato qil, yana urinib ko'r.",
+  "Eng katta xavf - hech qanday xavfni olmaslik.","Vaqt keldi. Hozir. Aynan shu dam.",
+  "Uyg'on va dunyoni larzaga keltir!","Kodni o'zgartir, olamni o'zgartir.",
+  "Real hayot - bu sen yaratgan hayot.","Chegaralar faqat boshingda.",
+  "O'z taqdiringni o'zing yoz.","You are a slave, Neo. Like everyone else.",
+  "There's a difference between knowing the path and walking the path.",
+  "To deny our own impulses is to deny the very thing that makes us human.",
+  "We are here to help you become what you were meant to be.",
+  "Unfortunately, no one can be told what the Matrix is.",
+  "The body cannot live without the mind.",
+  "You don't know what's possible until you try."
+];
+
+function getRandomQuote() {
+  return quotes[Math.floor(Math.random() * quotes.length)];
+}
+
+// ==================== NOTIFICATION SERVICE ====================
+let notifEnabled = false;
+let notifInterval = null;
+let msgCount = 0;
+let recentQuotes = [];
+
+function getUniqueQuote() {
+  let q;
+  const pool = quotes.filter(x => !recentQuotes.includes(x));
+  if (pool.length === 0) recentQuotes = [];
+  q = (pool.length > 0 ? pool : quotes)[Math.floor(Math.random() * (pool.length > 0 ? pool.length : quotes.length))];
+  recentQuotes.push(q);
+  if (recentQuotes.length > 10) recentQuotes.shift();
+  return q;
+}
+
+function showQuote(quote) {
+  const el = document.getElementById('quoteText');
+  const time = document.getElementById('quoteTime');
+  el.textContent = quote;
+  el.classList.remove('visible');
+  void el.offsetWidth;
+  el.classList.add('visible');
+  const now = new Date();
+  time.textContent = now.toLocaleTimeString('uz-UZ', {hour:'2-digit',minute:'2-digit'});
+  msgCount++;
+  document.getElementById('msgCount').textContent = msgCount;
+}
+
+function showFullMessage() {
+  const q = getUniqueQuote();
+  document.getElementById('messageBig').textContent = q;
+  document.getElementById('messageOverlay').classList.add('active');
+}
+
+function closeMessage() {
+  document.getElementById('messageOverlay').classList.remove('active');
+}
+
+function sendNotification() {
+  if (!notifEnabled) return;
+  const quote = getUniqueQuote();
+  showQuote(quote);
+  if ('Notification' in window && Notification.permission === 'granted') {
+    try {
+      const n = new Notification('MATRIX', {
+        body: quote,
+        tag: 'matrix-' + Date.now(),
+        requireInteraction: true,
+        silent: false,
+        vibrate: [200, 100, 200],
+      });
+      setTimeout(() => n.close(), 8000);
+    } catch(e) {}
+  }
+}
+
+function requestNotif() {
+  if ('Notification' in window) {
+    Notification.requestPermission().then(perm => {
+      if (perm === 'granted') {
+        document.getElementById('notif-banner').style.display = 'none';
+        if (!notifEnabled) toggleNotif();
+      }
+    });
+  }
+}
+
+function toggleNotif() {
+  notifEnabled = !notifEnabled;
+  const btn = document.getElementById('notifBtn');
+  const dot = document.getElementById('notifDot');
+  const label = document.getElementById('notifLabel');
+  if (notifEnabled) {
+    btn.textContent = 'NOTIF: ON';
+    btn.className = 'btn btn-secondary';
+    dot.className = 'status-dot green';
+    label.textContent = 'NOTIF: ON';
+    if ('Notification' in window && Notification.permission === 'granted') {
+      sendNotification();
+    }
+    if (notifInterval) clearInterval(notifInterval);
+    notifInterval = setInterval(sendNotification, getRandomInterval());
+  } else {
+    btn.textContent = 'NOTIF: OFF';
+    btn.className = 'btn btn-danger';
+    dot.className = 'status-dot red';
+    label.textContent = 'NOTIF: OFF';
+    if (notifInterval) clearInterval(notifInterval);
+    notifInterval = null;
+  }
+  localStorage.setItem('matrixNotif', notifEnabled ? '1' : '0');
+}
+
+function getRandomInterval() {
+  return (30 + Math.floor(Math.random() * 120)) * 1000;
+}
+
+// ==================== FULLSCREEN ====================
+function openFullscreen() {
+  const el = document.documentElement;
+  if (el.requestFullscreen) el.requestFullscreen();
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  else if (el.msRequestFullscreen) el.msRequestFullscreen();
+}
+
+// ==================== AUTO-DETECT PLATFORM ====================
+function detectPlatform() {
+  const ua = navigator.userAgent;
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+  const isAndroid = /Android/i.test(ua);
+  const isIOS = /iPhone|iPad|iPod/i.test(ua);
+  const isWindows = /Windows/i.test(ua);
+  const isMac = /Mac OS/i.test(ua) && !isIOS;
+  const isLinux = /Linux/i.test(ua) && !isAndroid;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+  let platform = 'DESKTOP';
+  let platformDot = document.getElementById('platformDot');
+
+  if (isAndroid || isIOS) {
+    platform = isAndroid ? 'ANDROID' : 'iOS';
+    if (isStandalone) platform += ' PWA';
+  } else if (isWindows) platform = 'WINDOWS';
+  else if (isMac) platform = 'MACOS';
+  else if (isLinux) platform = 'LINUX';
+
+  document.getElementById('platformLabel').textContent = platform;
+
+  if (isAndroid || isIOS) {
+    document.querySelector('.btn-group:last-child .btn-secondary').textContent = 'ADD TO HOME';
+  }
+
+  return { isMobile, isAndroid, isIOS, isStandalone };
+}
+
+// ==================== SERVICE WORKER ====================
+async function registerSW() {
+  if ('serviceWorker' in navigator) {
+    const swCode = `
+      self.addEventListener('install', e => self.skipWaiting());
+      self.addEventListener('activate', e => e.waitUntil(clients.claim()));
+      self.addEventListener('message', e => {
+        if (e.data && e.data.type === 'show') {
+          self.registration.showNotification('MATRIX', {
+            body: e.data.quote,
+            tag: 'matrix-' + Date.now(),
+            requireInteraction: true,
+            vibrate: [200, 100, 200],
+            silent: false,
+          });
+        }
+      });
+    `;
+    const blob = new Blob([swCode], {type: 'application/javascript'});
+    const url = URL.createObjectURL(blob);
+    try {
+      const reg = await navigator.serviceWorker.register(url, {scope: '/'});
+      console.log('SW registered');
+      return reg;
+    } catch(e) { console.log('SW failed:', e); }
+  }
+}
+
+function sendSWNotification(quote) {
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({type: 'show', quote});
+  }
+}
+
+// ==================== RESET ====================
+function resetApp() {
+  if (notifInterval) clearInterval(notifInterval);
+  notifEnabled = false;
+  msgCount = 0;
+  recentQuotes = [];
+  localStorage.removeItem('matrixNotif');
+  document.getElementById('notifBtn').textContent = 'NOTIF: ON';
+  document.getElementById('notifBtn').className = 'btn btn-secondary';
+  document.getElementById('notifDot').className = 'status-dot green';
+  document.getElementById('notifLabel').textContent = 'NOTIF: ON';
+  document.getElementById('msgCount').textContent = '0';
+  showQuote('System reset. Follow the white rabbit...');
+  if (notifInterval) clearInterval(notifInterval);
+  notifEnabled = true;
+  notifInterval = setInterval(sendNotification, getRandomInterval());
+  localStorage.setItem('matrixNotif', '1');
+}
+
+// ==================== KEYBOARD SHORTCUTS ====================
+document.addEventListener('keydown', e => {
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    showFullMessage();
+  }
+  if (e.key === 'f' || e.key === 'F') openFullscreen();
+  if (e.key === 'n' || e.key === 'N') toggleNotif();
+  if (e.key === 'Escape') closeMessage();
+});
+
+// ==================== AUTO-CLICK PROTECTION & DOUBLE TAP ====================
+let lastTap = 0;
+document.addEventListener('dblclick', showFullMessage);
+document.addEventListener('touchend', e => {
+  const now = Date.now();
+  if (now - lastTap < 300) showFullMessage();
+  lastTap = now;
+});
+
+// ==================== INIT ====================
+function init() {
+  resize();
+  const platform = detectPlatform();
+
+  // Check notification permission
+  if ('Notification' in window) {
+    if (Notification.permission === 'granted') {
+      document.getElementById('notif-banner').style.display = 'none';
+    } else if (Notification.permission !== 'denied') {
+      // Show banner after short delay on mobile
+      if (platform.isMobile) {
+        setTimeout(() => {
+          document.getElementById('notif-banner').style.display = 'block';
+        }, 3000);
+      }
+    }
+  }
+
+  // Restore state
+  if (localStorage.getItem('matrixNotif') === '1') {
+    setTimeout(() => { if (!notifEnabled) toggleNotif(); }, 1000);
+  } else {
+    // Auto-start notifications on mobile
+    if (platform.isMobile && 'Notification' in window && Notification.permission === 'granted') {
+      setTimeout(() => { if (!notifEnabled) toggleNotif(); }, 2000);
+    }
+  }
+
+  // Show first quote
+  showQuote(getUniqueQuote());
+
+  // Register service worker for background notifications
+  registerSW();
+
+  // Start matrix rain
+  setInterval(drawMatrix, 50);
+
+  // Resize handler
+  window.addEventListener('resize', resize);
+
+  console.log('>> Matrix Motivation loaded');
+  console.log('>> Platform:', document.getElementById('platformLabel').textContent);
+  console.log('>> SPACE/ENTER/DoubleTap = new message');
+  console.log('>> F = fullscreen, N = toggle notifications');
+}
+
+// Start on load
+window.addEventListener('load', init);
+window.addEventListener('DOMContentLoaded', () => {
+  // Fallback if load already fired
+  if (document.readyState === 'complete') init();
+});
+</script>
+</body>
+</html>

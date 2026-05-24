@@ -1,0 +1,25 @@
+name: matrix_motivation
+description: Matrix uslubidagi motivatsion notifications ilovasi
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  flutter_local_notifications: ^17.2.1
+  workmanager: ^0.5.2
+  shared_preferences: ^2.2.2
+  
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
